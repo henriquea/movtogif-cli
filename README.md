@@ -1,1 +1,0 @@
-# movtogif-cli

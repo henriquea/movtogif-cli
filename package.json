@@ -1,6 +1,6 @@
 {
   "name": "movtogif-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Convert mov to high-quality animated gifs",
   "bin": {
     "movtogif": "./index.js"

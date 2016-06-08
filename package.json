@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Convert mov to high-quality animated gifs",
   "bin": {
-    "movtogif": "./index"
+    "movtogif": "./index.js"
   },
   "engines": {
     "node": ">=4"

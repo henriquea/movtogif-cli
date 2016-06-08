@@ -2,8 +2,11 @@
 
 ### Dependencies
 
-- [ffmpeg](https://ffmpeg.org/)
-- [imagemagick](http://www.imagemagick.org/script/index.php)
+```
+~> brew update
+~> brew install ffmpeg
+~> brew install imagemagick
+```
 
 ### Install
 

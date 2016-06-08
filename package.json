@@ -1,5 +1,5 @@
 {
-  "name": "movtogif-cli",
+  "name": "@henriquea/movtogif-cli",
   "version": "1.0.0",
   "description": "Convert mov to animated gif",
   "bin": {

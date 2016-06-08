@@ -2,7 +2,6 @@
   "name": "movtogif-cli",
   "version": "1.0.0",
   "description": "Convert mov to animated gif",
-  "main": "index.js",
   "bin": {
     "movtogif": "./index"
   },

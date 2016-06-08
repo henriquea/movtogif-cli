@@ -7,7 +7,7 @@
 
 ### Install
 
-`~> npm install -g @henriquea/movtogif-cli`
+`~> npm install -g movtogif-cli`
 
 ### Usage
 

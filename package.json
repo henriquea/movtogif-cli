@@ -1,7 +1,7 @@
 {
-  "name": "@henriquea/movtogif-cli",
+  "name": "movtogif-cli",
   "version": "1.0.0",
-  "description": "Convert mov to animated gif",
+  "description": "Convert mov to high-quality animated gifs",
   "bin": {
     "movtogif": "./index"
   },
@@ -25,7 +25,7 @@
     "email": "henriquea@gmail.com",
     "url": "alves.im"
   },
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/henriquea/movtogif-cli/issues"
   },

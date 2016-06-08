@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "Convert mov to animated gif",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "bin": {
+    "movtogif": "./index"
+  },
+  "engines": {
+    "node": ">=4"
   },
   "repository": {
     "type": "git",
@@ -18,15 +21,17 @@
     "ffmpeg",
     "imagemagick"
   ],
-  "author": "Henrique Alves <henriquea@gmail.com> (http://alves.im)",
+  "author": {
+    "name": "Henrique Alves",
+    "email": "henriquea@gmail.com",
+    "url": "alves.im"
+  },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/henriquea/movtogif-cli/issues"
   },
   "homepage": "https://github.com/henriquea/movtogif-cli#readme",
   "dependencies": {
-    "get-video-dimensions": "^1.0.0",
-    "minimist": "^1.2.0",
-    "tmp": "0.0.28"
+    "minimist": "^1.2.0"
   }
 }

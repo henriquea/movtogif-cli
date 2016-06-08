@@ -1,9 +1,10 @@
+#!/usr/bin/env node
 
-const exec = require('child_process').exec;
+const os = require('os');
+const fs = require('fs');
 const path = require('path');
+const exec = require('child_process').exec;
 const argv = require('minimist')(process.argv.slice(2));
-const tmp = require('tmp');
-const videoStats = require('get-video-dimensions');
 
 const which = (commandName, callback) => {
   return new Promise((resolve, reject) => {
@@ -19,13 +20,48 @@ const which = (commandName, callback) => {
   })
 };
 
-const ffmpeg = (input, tempPath) => {
-  const r = 10;
+const metadata = file => {
+  const cmd = [
+    'ffprobe',
+    '-v error',
+    '-of flat=s=_',
+    '-select_streams v:0',
+    '-show_entries',
+    'stream=height,width',
+    `${file}`
+  ].join(' ');
+  return new Promise((resolve, reject) => {
+    exec(cmd, (error, stdout, stderr) => {
+      const width = /width=(\d+)/.exec(stdout);
+      const height = /height=(\d+)/.exec(stdout);
+      if (!!height && !!width) {
+        resolve({
+          width: width[1],
+          height: height[1]
+        });
+      } else {
+        reject('Metadata not found!');
+      }
+    });
+  });
+
+}
+
+const ffmpeg = (input, tempPath, options) => {
+  const r = options.r || 10;
   const inputArr = input.split('/');
   const filename = inputArr[inputArr.length-1];
-  videoStats(input).then(stats => {
-    return new Promise((resolve, reject) => {
-      exec(`ffmpeg -i ${input} -vf scale=${stats.width}:-1 -r ${r} ${tempPath}gif%3d.png`,
+  return new Promise((resolve, reject) => {
+    metadata(input).then(metadata => {
+      const cmd = [
+        'ffmpeg',
+        `-i ${input}`,
+        '-vf',
+        `scale=${metadata.width}:-1`,
+        `-r ${r}`,
+        `${tempPath}/gif%3d.png`
+      ].join(' ');
+      exec(cmd,
         (error, stdout, stderr) => {
           if (stderr.indexOf('video:')) {
             resolve();
@@ -34,32 +70,41 @@ const ffmpeg = (input, tempPath) => {
           }
         }
       );
-    })
+    });
   });
 };
 
-const convert = (path) => {
-  // convert \
-  //   -resize 75% \
-  //   -delay 8 \
-  //   -dither none \
-  //   -coalesce \
-  //   -layers optimize \
-  //   -depth 8 \
-  //   -colors 128 \
-  //   -loop 0 \
-  //   output/gif*.png \
-  //   out.gif
+const convert = (input, tempPath, output, options) => {
+  const resize = options.resize || '75%';
+  const delay = options.delay || 4;
+  const cmd = ['convert',
+    `-resize ${resize}`,
+    `-delay ${delay}`,
+    '-dither none',
+    '-coalesce',
+    '-layers optimize',
+    '-depth 8',
+    '-colors 128',
+    '-loop 0',
+    `${tempPath}gif*.png ${output}`
+  ].join(' ');
+  console.log('Cooking 🍰');
+  exec(cmd, (error, stdout, stderr) => {
+    console.log('Done 🍺');
+    console.log(output);
+  });
 }
 
 const help = `
 Usage: movtogif [video] [outputPath]
   CLI to convert mov to animated gif
 Example:
-  $ movtogif video.mov ~/Desktop
+  $ movtogif ~/Desktop/video.mov ~/Desktop/video.gif
 Options:
-  -v --version              Display current software version
-  -h --help                 Display help and usage details
+  -v --version           Display current software version
+  -h --help              Display help and usage details
+  --resize               Resize the gif. The default value is 75%
+  --delay                Delay between the frames generated. The default is 4
 `;
 
 const missingDependencies = `
@@ -81,11 +126,11 @@ Promise.all([
     }
     const input = argv._[0];
     const output = argv._[1];
-    tmp.dir((err, path, clean) => {
-      if (err) throw err;
-      ffmpeg(input, path);
-      // convert(path);
-      //clean();
-    });
+    const options = { resize: argv.resize };
+    const dir = path.resolve(os.tmpdir(), 'movtogif');
+    ffmpeg(input, dir, {}).then(
+      convert(input, dir, output, options)
+    );
+    exec(`rm -rf ${dir}`);
   })
   .catch(() => console.log(missingDependencies));

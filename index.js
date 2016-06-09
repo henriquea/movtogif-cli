@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-const os = require('os');
 const fs = require('fs');
 const path = require('path');
 const exec = require('child_process').exec;
 const pkg = require('./package.json');
 const argv = require('minimist')(process.argv.slice(2));
+const temp = require('promised-temp');
 
 const which = (cmd, callback) => {
   return new Promise((resolve, reject) => {
@@ -80,17 +80,15 @@ const convert = (input, tempPath, output, options) => {
   ].join(' ');
   console.log('Cooking 🍳');
   exec(cmd, (error, stdout, stderr) => {
-    if (error) {
-      console.log(error);
-      return;
-    }
+    //console.log(error);
     console.log('Done 🍔');
     console.log(`📺  ~> ${output}`);
+    exec(`rm -rf ${tempPath}`);
   });
 }
 
 const help = `
-Usage: movtogif [video] [outputPath]
+Usage: movtogif [videoFile] [outputFile]
   CLI to convert mov to animated gif
 Example:
   $ movtogif ~/Desktop/video.mov ~/Desktop/video.gif
@@ -132,13 +130,14 @@ Promise.all([
       delay: argv.delay || argv.d
     };
 
-    const dir = path.resolve(os.tmpdir(), 'movtogif');
-    console.log('Preparing recipe 📕');
+    temp
+      .mkdir('movtogif')
+      .then(dir => {
+        console.log('Preparing recipe 📕');
+        ffmpeg(input, dir, {}).then(
+          setTimeout( () => convert(input, dir, output, options), 50)
+        );
+      });
 
-    exec(`mkdir -p ${dir}`, () => {
-      ffmpeg(input, dir, {}).then(
-        convert(input, dir, output, options)
-      );
-    });
   })
   .catch(() => console.log(missingDependencies));

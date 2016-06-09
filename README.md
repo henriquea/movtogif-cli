@@ -21,3 +21,12 @@ brew install imagemagick
 For more options check out the help `movtogif -h`.
 
 `movtogif video.mov video.gif`
+
+### Optimise GIF
+
+You can try [gifsicle](https://www.lcdf.org/gifsicle/) to reduce the file size.
+
+```
+brew install gifsicle
+gifsicle -O3 video.gif -o video-optimized.gif
+```

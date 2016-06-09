@@ -14,6 +14,7 @@
   },
   "keywords": [
     "mov",
+		"mp4",
     "gif",
     "cli",
     "quicktime",
@@ -33,6 +34,6 @@
   "dependencies": {
     "async": "^2.0.0-rc.6",
     "minimist": "^1.2.0",
-    "os-tmpdir": "^1.0.1",
+    "os-tmpdir": "^1.0.1"
   }
 }

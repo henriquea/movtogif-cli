@@ -1,6 +1,6 @@
 {
   "name": "movtogif-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "📺 Convert mov/mp4 to high-quality animated gifs",
   "bin": {
     "movtogif": "./index.js"

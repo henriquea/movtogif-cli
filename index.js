@@ -4,14 +4,15 @@ const os = require('os');
 const fs = require('fs');
 const path = require('path');
 const exec = require('child_process').exec;
+const pkg = require('./package.json');
 const argv = require('minimist')(process.argv.slice(2));
 
 const which = (cmd, callback) => {
   return new Promise((resolve, reject) => {
     exec(`which ${cmd} 2>/dev/null && { echo >&1 ${cmd} found; exit 0; }`,
       (error, stdout, stderr) => {
-				!!stdout.length ? resolve(true) : reject();
-			}
+        !!stdout.length ? resolve(true) : reject();
+      }
     );
   })
 };
@@ -56,8 +57,8 @@ const ffmpeg = (input, tempPath, options) => {
       ].join(' ');
       exec(cmd,
         (error, stdout, stderr) => {
-					stderr.indexOf('video:') ? resolve() : reject();
-				}
+          stderr.indexOf('video:') ? resolve() : reject();
+        }
       );
     });
   });
@@ -77,15 +78,15 @@ const convert = (input, tempPath, output, options) => {
     '-loop 0',
     `${tempPath}/gif*.png ${output}`
   ].join(' ');
-  console.log('Cooking 🍰');
-	exec(cmd, (error, stdout, stderr) => {
-		if (error) {
-			console.log(error);
-			return;
-		}
-		console.log('Done 🍺');
-		console.log(`📺  ~> ${output}`);
-	});
+  console.log('Cooking 🍳');
+  exec(cmd, (error, stdout, stderr) => {
+    if (error) {
+      console.log(error);
+      return;
+    }
+    console.log('Done 🍔');
+    console.log(`📺  ~> ${output}`);
+  });
 }
 
 const help = `
@@ -112,23 +113,32 @@ Promise.all([
   which('convert')
 ])
   .then(() => {
-    console.log('Starting the magic 🎩');
-    if (argv._.length < 2) {
-      console.log(help);
+
+    if (argv.version || argv.v) {
+      console.log(pkg.version);
       return;
     }
+
     const input = argv._[0];
     const output = argv._[1];
 
+    if (!input || !output) {
+      console.log(help);
+      return;
+    }
+
     const options = {
-			resize: argv.resize || argv.r,
-			delay: argv.delay || argv.d
-		};
+      resize: argv.resize || argv.r,
+      delay: argv.delay || argv.d
+    };
+
     const dir = path.resolve(os.tmpdir(), 'movtogif');
-		exec(`mkdir -p ${dir}`, () => {
-			ffmpeg(input, dir, {}).then(
-	      convert(input, dir, output, options)
-	    );
-		});
+    console.log('Preparing recipe 📕');
+
+    exec(`mkdir -p ${dir}`, () => {
+      ffmpeg(input, dir, {}).then(
+        convert(input, dir, output, options)
+      );
+    });
   })
   .catch(() => console.log(missingDependencies));

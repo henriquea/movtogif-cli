@@ -18,6 +18,6 @@ brew install imagemagick
 
 ### Usage
 
-Check the help `movtogif -h`.
+For more options check out the help `movtogif -h`.
 
 `movtogif video.mov video.gif`

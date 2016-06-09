@@ -24,7 +24,7 @@ For more options check out the help `movtogif -h`.
 
 ### Optimise GIF
 
-You can try [gifsicle](https://www.lcdf.org/gifsicle/) to reduce the file size.
+If you're not happy with the file size you can try [gifsicle](https://www.lcdf.org/gifsicle/) to reduce it. However it may compromise the image quality.
 
 ```
 brew install gifsicle

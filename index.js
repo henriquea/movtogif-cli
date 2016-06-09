@@ -6,16 +6,12 @@ const path = require('path');
 const exec = require('child_process').exec;
 const argv = require('minimist')(process.argv.slice(2));
 
-const which = (commandName, callback) => {
+const which = (cmd, callback) => {
   return new Promise((resolve, reject) => {
-    exec(`which ${commandName} 2>/dev/null && { echo >&1 ${commandName} found; exit 0; }`,
+    exec(`which ${cmd} 2>/dev/null && { echo >&1 ${cmd} found; exit 0; }`,
       (error, stdout, stderr) => {
-        if (stdout.length === 0) {
-          reject();
-        } else {
-          resolve(!!stdout);
-        }
-      }
+				!!stdout.length ? resolve(true) : reject();
+			}
     );
   })
 };
@@ -44,13 +40,10 @@ const metadata = file => {
       }
     });
   });
-
 }
 
 const ffmpeg = (input, tempPath, options) => {
   const r = options.r || 10;
-  const inputArr = input.split('/');
-  const filename = inputArr[inputArr.length-1];
   return new Promise((resolve, reject) => {
     metadata(input).then(metadata => {
       const cmd = [
@@ -63,12 +56,8 @@ const ffmpeg = (input, tempPath, options) => {
       ].join(' ');
       exec(cmd,
         (error, stdout, stderr) => {
-          if (stderr.indexOf('video:')) {
-            resolve();
-          } else {
-            reject();
-          }
-        }
+					stderr.indexOf('video:') ? resolve() : reject();
+				}
       );
     });
   });
@@ -76,7 +65,7 @@ const ffmpeg = (input, tempPath, options) => {
 
 const convert = (input, tempPath, output, options) => {
   const resize = options.resize || '75%';
-  const delay = options.delay || 4;
+  const delay = options.delay || 8;
   const cmd = ['convert',
     `-resize ${resize}`,
     `-delay ${delay}`,
@@ -86,13 +75,17 @@ const convert = (input, tempPath, output, options) => {
     '-depth 8',
     '-colors 128',
     '-loop 0',
-    `${tempPath}gif*.png ${output}`
+    `${tempPath}/gif*.png ${output}`
   ].join(' ');
   console.log('Cooking 🍰');
-  exec(cmd, (error, stdout, stderr) => {
-    console.log('Done 🍺');
-    console.log(output);
-  });
+	exec(cmd, (error, stdout, stderr) => {
+		if (error) {
+			console.log(error);
+			return;
+		}
+		console.log('Done 🍺');
+		console.log(`📺  ~> ${output}`);
+	});
 }
 
 const help = `
@@ -103,8 +96,8 @@ Example:
 Options:
   -v --version           Display current software version
   -h --help              Display help and usage details
-  --resize               Resize the gif. The default value is 75%
-  --delay                Delay between the frames generated. The default is 4
+  -r --resize            Resize the gif. The default value is 75%
+  -d --delay             Delay between the frames generated. The default is 8
 `;
 
 const missingDependencies = `
@@ -126,11 +119,16 @@ Promise.all([
     }
     const input = argv._[0];
     const output = argv._[1];
-    const options = { resize: argv.resize };
+
+    const options = {
+			resize: argv.resize || argv.r,
+			delay: argv.delay || argv.d
+		};
     const dir = path.resolve(os.tmpdir(), 'movtogif');
-    ffmpeg(input, dir, {}).then(
-      convert(input, dir, output, options)
-    );
-    exec(`rm -rf ${dir}`);
+		exec(`mkdir -p ${dir}`, () => {
+			ffmpeg(input, dir, {}).then(
+	      convert(input, dir, output, options)
+	    );
+		});
   })
   .catch(() => console.log(missingDependencies));

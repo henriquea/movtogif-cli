@@ -1,4 +1,8 @@
-> This is for personal use to generate animated gifs from QuickTime screen recording. Useful for take snapshots of interactive UIs and attach to pull requests. The defaults values are optimised for quality and file size.
+I've been using [ffmpeg](https://ffmpeg.org/) and [imagemagick](http://www.imagemagick.org/) manually to generate animated gifs from QuickTime mov/mp4. I created this simple cli to make my life easier. I use this tool to take snapshots of interactive UIs and attach to pull requests.
+
+The default options are optimised for quality and file size. The only options exposed are `--resize` and `--delay`.
+
+> Protip: Do not record your whole screen and try to generate a gif. This probably won't end well.
 
 ### Dependencies
 
@@ -16,4 +20,4 @@
 
 Check the help `movtogif -h`.
 
-`~> movtogif ~/Desktop/video.mov ~/Desktop/video.gif`
+`~> movtogif video.mov video.gif`

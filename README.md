@@ -1,4 +1,6 @@
 
+# DEPRECATED! [Gifski](https://blog.sindresorhus.com/gifski-972692460aa5) is all you need.
+
 ![gif](https://cldup.com/ES217cShEW.gif)
 
 I'm using [ffmpeg](https://ffmpeg.org/) and [imagemagick](http://www.imagemagick.org/) manually to generate animated gifs from QuickTime mov/mp4. I created this simple cli to make my life easier. I use this tool to take snapshots of interactive UIs and attach to pull requests.
